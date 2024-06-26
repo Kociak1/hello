@@ -1,0 +1,52 @@
+name: Update abc.txt with date and time
+
+on:
+  schedule:
+    - cron: '*/1 * * * *'  # Uruchamia się co minutę
+  workflow_dispatch:  # Umożliwia ręczne uruchomienie workflow
+
+jobs:
+  update-file:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Git
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+    - name: Append date and time to abc.txt (first time)
+      run: |
+        echo "$(date)" >> abc.txt
+        git add abc.txt
+        git commit -m "Update abc.txt with current date and time (1)"
+        git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Wait for 20 seconds
+      run: sleep 20
+
+    - name: Append date and time to abc.txt (second time)
+      run: |
+        echo "$(date)" >> abc.txt
+        git add abc.txt
+        git commit -m "Update abc.txt with current date and time (2)"
+        git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Wait for 20 seconds
+      run: sleep 20
+
+    - name: Append date and time to abc.txt (third time)
+      run: |
+        echo "$(date)" >> abc.txt
+        git add abc.txt
+        git commit -m "Update abc.txt with current date and time (3)"
+        git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
