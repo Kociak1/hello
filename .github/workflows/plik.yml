@@ -1,9 +1,7 @@
-name: Update abc.txt with date and time
+name: Update abc.txt with date and time every 20 seconds
 
 on:
-  schedule:
-    - cron: '*/1 * * * *'  # Uruchamia się co minutę
-  workflow_dispatch:  # Umożliwia ręczne uruchomienie workflow
+  workflow_dispatch:  # Allows manual triggering of the workflow
 
 jobs:
   update-file:
@@ -13,40 +11,22 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+
     - name: Set up Git
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
 
-    - name: Append date and time to abc.txt (first time)
+    - name: Run Python script
       run: |
-        echo "$(date)" >> abc.txt
-        git add abc.txt
-        git commit -m "Update abc.txt with current date and time (1)"
-        git push
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Wait for 20 seconds
-      run: sleep 20
-
-    - name: Append date and time to abc.txt (second time)
-      run: |
-        echo "$(date)" >> abc.txt
-        git add abc.txt
-        git commit -m "Update abc.txt with current date and time (2)"
-        git push
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Wait for 20 seconds
-      run: sleep 20
-
-    - name: Append date and time to abc.txt (third time)
-      run: |
-        echo "$(date)" >> abc.txt
-        git add abc.txt
-        git commit -m "Update abc.txt with current date and time (3)"
-        git push
+        python update_abc.py
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
